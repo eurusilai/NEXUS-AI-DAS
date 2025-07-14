@@ -1,14 +1,5 @@
 import React from 'react';
-import { 
-  TrendingUp, 
-  TrendingDown, 
-  BarChart2, 
-  Clock, 
-  Calendar,
-  DollarSign,
-  Percent,
-  Target
-} from 'lucide-react';
+import { BarChart3, Target } from 'lucide-react';
 
 export interface JournalStatsProps {
   analytics: {
@@ -54,7 +45,7 @@ export const JournalStats: React.FC<JournalStatsProps> = ({ analytics }) => {
       {/* Returns & Drawdown */}
       <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
-          <Percent className="w-8 h-8 text-green-400" />
+          <BarChart3 className="w-8 h-8 text-green-400" />
           <div className="text-right">
             <div className="text-2xl font-bold text-white">
               {analytics.totalReturn > 0 ? '+' : ''}{analytics.totalReturn.toFixed(1)}%
@@ -77,7 +68,7 @@ export const JournalStats: React.FC<JournalStatsProps> = ({ analytics }) => {
       {/* Best & Worst */}
       <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
-          <BarChart2 className="w-8 h-8 text-purple-400" />
+          <BarChart3 className="w-8 h-8 text-purple-400" />
           <div className="text-right">
             <div className="text-2xl font-bold text-white">{analytics.totalTrades}</div>
             <div className="text-sm text-gray-400">Total Trades</div>
@@ -98,7 +89,7 @@ export const JournalStats: React.FC<JournalStatsProps> = ({ analytics }) => {
       {/* Streaks & Duration */}
       <div className="bg-gray-900 border border-gray-800 rounded-xl p-6">
         <div className="flex items-center justify-between mb-4">
-          <Clock className="w-8 h-8 text-orange-400" />
+          <BarChart3 className="w-8 h-8 text-orange-400" />
           <div className="text-right">
             <div className="text-2xl font-bold text-white">{analytics.averageDuration}m</div>
             <div className="text-sm text-gray-400">Avg Duration</div>

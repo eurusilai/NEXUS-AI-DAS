@@ -1,17 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  MessageSquare,
   Send,
   Bot,
   User,
   Settings,
-  Zap,
   TrendingUp,
   Shield,
   BookOpen,
   X,
   Minimize2,
-  Maximize2,
   BarChart3,
   Brain,
   AlertCircle,
@@ -29,10 +26,10 @@ interface AIChatProps {
   onToggleMinimize?: () => void;
 }
 
-export const AIChat: React.FC<AIChatProps> = ({ 
-  dashboardContext, 
-  isMinimized = false, 
-  onToggleMinimize 
+export const AIChat: React.FC<AIChatProps> = ({
+  dashboardContext,
+  isMinimized = false,
+  onToggleMinimize
 }) => {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputMessage, setInputMessage] = useState('');
@@ -47,10 +44,10 @@ export const AIChat: React.FC<AIChatProps> = ({
     const currentConfig = mistralAI.getConfiguration();
     setIsConfigured(mistralAI.isReady());
     setApiKey(currentConfig.apiKey || '');
-    
+
     // Update AI with dashboard context
     mistralAI.updateDashboardContext(dashboardContext);
-    
+
     // Load chat history
     const stored = localStorage.getItem('ai-chat-history');
     if (stored) {
@@ -68,7 +65,7 @@ export const AIChat: React.FC<AIChatProps> = ({
 
 I can help you with:
 🔍 **Market Analysis** - Analyze current market conditions and trends
-📊 **Strategy Optimization** - Review and improve your trading strategies  
+📊 **Strategy Optimization** - Review and improve your trading strategies
 ⚖️ **Risk Assessment** - Evaluate your risk profile and exposure
 📖 **Trading Journal Review** - Analyze your trading performance and patterns
 🎯 **Trade Ideas** - Suggest potential trading opportunities
@@ -108,7 +105,7 @@ What would you like to analyze today?`,
 
     try {
       const response = await mistralAI.sendMessage(inputMessage.trim(), { useHistory: true });
-      
+
       const assistantMessage: ChatMessage = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
@@ -182,7 +179,7 @@ What would you like to analyze today?`,
       try {
         const success = mistralAI.configure({ apiKey: apiKey.trim() });
         setIsConfigured(success);
-        
+
         if (success) {
           setShowConfig(false);
           const configMessage: ChatMessage = {
@@ -226,14 +223,14 @@ What would you like to analyze today?`,
 
   const testConnection = async () => {
     if (!isConfigured) return;
-    
+
     setIsLoading(true);
     try {
       const testResult = await mistralAI.testConnection();
       const message: ChatMessage = {
         id: Date.now().toString(),
         role: 'assistant',
-        content: testResult 
+        content: testResult
           ? '✅ Connection test successful! AI is ready to assist you.'
           : '❌ Connection test failed. Please check your API key and try again.',
         timestamp: Date.now()
@@ -259,7 +256,7 @@ What would you like to analyze today?`,
           onClick={onToggleMinimize}
           className="flex items-center space-x-2 px-4 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-colors"
         >
-          <Brain className="w-5 h-5" />
+          <Bot className="w-5 h-5" />
           <span>NEXUS AI</span>
           {!isConfigured && <AlertCircle className="w-4 h-4 text-yellow-400" />}
         </button>
@@ -273,7 +270,7 @@ What would you like to analyze today?`,
       <div className="flex items-center justify-between p-4 border-b border-gray-800">
         <div className="flex items-center space-x-3">
           <div className="p-2 bg-blue-900/20 rounded-lg">
-            <Brain className="w-5 h-5 text-blue-400" />
+            <Bot className="w-5 h-5 text-blue-400" />
           </div>
           <div>
             <h3 className="text-white font-semibold">NEXUS AI</h3>
@@ -292,7 +289,7 @@ What would you like to analyze today?`,
             </div>
           </div>
         </div>
-        
+
         <div className="flex items-center space-x-2">
           <button
             onClick={() => setShowConfig(true)}
@@ -370,10 +367,10 @@ What would you like to analyze today?`,
                   <Bot className="w-4 h-4 text-blue-400" />
                 )}
               </div>
-              
+
               <div className={`p-3 rounded-lg ${
-                message.role === 'user' 
-                  ? 'bg-blue-600 text-white' 
+                message.role === 'user'
+                  ? 'bg-blue-600 text-white'
                   : 'bg-gray-800 text-gray-100'
               }`}>
                 <div className="text-sm whitespace-pre-wrap">{message.content}</div>
@@ -409,7 +406,7 @@ What would you like to analyze today?`,
             </div>
           </div>
         ))}
-        
+
         {isLoading && (
           <div className="flex justify-start">
             <div className="flex items-center space-x-2">
@@ -425,7 +422,7 @@ What would you like to analyze today?`,
             </div>
           </div>
         )}
-        
+
         <div ref={messagesEndRef} />
       </div>
 
@@ -464,7 +461,7 @@ What would you like to analyze today?`,
                 <X className="w-4 h-4" />
               </button>
             </div>
-            
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm text-gray-400 mb-2">Mistral AI API Key</label>
@@ -479,7 +476,7 @@ What would you like to analyze today?`,
                   Get your API key from <a href="https://console.mistral.ai/" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline">console.mistral.ai</a>
                 </p>
               </div>
-              
+
               <div className="flex items-center space-x-2">
                 <button
                   onClick={clearChat}

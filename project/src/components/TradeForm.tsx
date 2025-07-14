@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, Save, Upload, Trash2 } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Calendar, Plus, X, Save } from 'lucide-react';
 import { Trade } from './TradeCard';
 
 export interface TradeFormProps {

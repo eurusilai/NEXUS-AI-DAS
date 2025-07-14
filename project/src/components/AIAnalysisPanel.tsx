@@ -8,14 +8,12 @@ import {
   Zap,
   RefreshCw,
   AlertTriangle,
-  CheckCircle,
-  Clock,
-  Target
+  Clock
 } from 'lucide-react';
-import { enhancedMistralAI as mistralAI } from '../services/MistralAI';
+import { enhancedMistralAI as mistralAI, DashboardContext } from '../services/MistralAI';
 
 interface AIAnalysisPanelProps {
-  dashboardContext: any;
+  dashboardContext: DashboardContext;
 }
 
 export const AIAnalysisPanel: React.FC<AIAnalysisPanelProps> = ({ dashboardContext }) => {

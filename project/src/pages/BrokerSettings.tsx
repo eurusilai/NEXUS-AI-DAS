@@ -1,19 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { 
-  Plus, 
-  Settings, 
-  Wifi, 
-  WifiOff, 
-  AlertCircle, 
-  CheckCircle,
-  Trash2,
-  Edit3,
-  Key,
-  Server,
-  Database,
-  Activity,
-  Zap
-} from 'lucide-react';
+import React, { useState } from 'react';
+import { Plus, CheckCircle, XCircle, AlertCircle } from 'lucide-react';
 import { BrokerConnection } from '../types/trading';
 import { AddConnectionModal } from '../components/AddConnectionModal';
 import { BrokerConnectionManager } from '../components/BrokerConnectionManager';
@@ -53,16 +39,16 @@ export const BrokerSettings: React.FC = () => {
   const [selectedConnection, setSelectedConnection] = useState<string | null>(null);
 
   // persist connections to localStorage
-  useEffect(() => {
-    const stored = localStorage.getItem('broker-connections');
-    if (stored) {
-      try { setConnections(JSON.parse(stored)); } catch {}
-    }
-  }, []);
+  // useEffect(() => {
+  //   const stored = localStorage.getItem('broker-connections');
+  //   if (stored) {
+  //     try { setConnections(JSON.parse(stored)); } catch {}
+  //   }
+  // }, []);
 
-  useEffect(() => {
-    localStorage.setItem('broker-connections', JSON.stringify(connections));
-  }, [connections]);
+  // useEffect(() => {
+  //   localStorage.setItem('broker-connections', JSON.stringify(connections));
+  // }, [connections]);
 
   const handleAddConnection = (conn: BrokerConnection) => {
     setConnections(prev => [...prev, conn]);
@@ -119,7 +105,7 @@ export const BrokerSettings: React.FC = () => {
         
         <div className="bg-gray-900 border border-gray-700 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <WifiOff className="w-8 h-8 text-gray-400" />
+            <XCircle className="w-8 h-8 text-gray-400" />
             <span className="text-2xl font-bold text-gray-400">{stats.disconnected}</span>
           </div>
           <h3 className="text-white font-medium">Disconnected</h3>
@@ -137,7 +123,6 @@ export const BrokerSettings: React.FC = () => {
 
         <div className="bg-gray-900 border border-gray-700 rounded-xl p-6">
           <div className="flex items-center justify-between mb-4">
-            <Activity className="w-8 h-8 text-blue-400" />
             <span className="text-2xl font-bold text-blue-400">{connections.length}</span>
           </div>
           <h3 className="text-white font-medium">Total</h3>
@@ -159,7 +144,7 @@ export const BrokerSettings: React.FC = () => {
         
         {connections.length === 0 && (
           <div className="text-center py-12 text-gray-400">
-            <Database className="w-16 h-16 mx-auto mb-4 text-gray-600" />
+            <span className="w-16 h-16 mx-auto mb-4 text-gray-600" />
             <h3 className="text-lg font-medium mb-2">No broker connections configured</h3>
             <p className="mb-4">Add your first trading platform connection to get started</p>
             <button
@@ -187,7 +172,7 @@ export const BrokerSettings: React.FC = () => {
           <div className="bg-gray-800 rounded-lg p-6">
             <div className="flex items-center space-x-3 mb-4">
               <div className="p-2 bg-purple-900/20 rounded-lg">
-                <Settings className="w-6 h-6 text-purple-400" />
+                <span className="w-6 h-6 text-purple-400" />
               </div>
               <h4 className="text-white font-medium">NinjaTrader 8</h4>
             </div>
@@ -205,7 +190,7 @@ export const BrokerSettings: React.FC = () => {
           <div className="bg-gray-800 rounded-lg p-6">
             <div className="flex items-center space-x-3 mb-4">
               <div className="p-2 bg-blue-900/20 rounded-lg">
-                <Server className="w-6 h-6 text-blue-400" />
+                <span className="w-6 h-6 text-blue-400" />
               </div>
               <h4 className="text-white font-medium">Sierra Chart</h4>
             </div>
@@ -223,7 +208,7 @@ export const BrokerSettings: React.FC = () => {
           <div className="bg-gray-800 rounded-lg p-6">
             <div className="flex items-center space-x-3 mb-4">
               <div className="p-2 bg-orange-900/20 rounded-lg">
-                <Zap className="w-6 h-6 text-orange-400" />
+                <span className="w-6 h-6 text-orange-400" />
               </div>
               <h4 className="text-white font-medium">Rithmic API</h4>
             </div>

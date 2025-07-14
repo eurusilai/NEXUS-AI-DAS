@@ -56,11 +56,13 @@ export const useDashboardData = () => {
 
   useEffect(() => {
     const ws = new WebSocket('ws://localhost:4000');
-    ws.onmessage = evt => {
+    ws.onmessage = (evt) => {
       try {
         const json = JSON.parse(evt.data);
         setData(json);
-      } catch {}
+      } catch (error) {
+        console.warn('Failed to parse WebSocket message:', error);
+      }
     };
     return () => ws.close();
   }, []);

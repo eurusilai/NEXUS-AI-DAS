@@ -1,8 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   Plus,
   Save,
-  Play,
   Download,
   Upload,
   Settings,
@@ -15,9 +14,11 @@ import {
   Terminal,
   PlayCircle,
   Square,
-  Zap,
-  Monitor,
-  RefreshCw
+  RefreshCw,
+  Trash2,
+  ChevronUp,
+  Copy,
+  CheckCircle
 } from 'lucide-react';
 import { NotebookCellComponent, NotebookCell } from '../components/NotebookCell';
 import { ConfigModal } from '../components/ConfigModal';

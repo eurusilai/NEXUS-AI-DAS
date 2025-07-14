@@ -8,8 +8,7 @@ import {
   TestTube, 
   FileText, 
   Notebook, 
-  Settings,
-  Activity
+  Settings
 } from 'lucide-react';
 
 interface NavigationProps {
@@ -17,7 +16,7 @@ interface NavigationProps {
   setCurrentPage: (page: string) => void;
 }
 
-export const Navigation: React.FC<NavigationProps> = ({ currentPage, setCurrentPage }) => {
+export const Navigation: React.FC<NavigationProps> = ({ setCurrentPage }) => {
   const location = useLocation();
 
   const navItems = [

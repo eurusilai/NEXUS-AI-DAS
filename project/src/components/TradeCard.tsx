@@ -1,5 +1,5 @@
 import React from 'react';
-import { Edit3, Trash2, ExternalLink, Image, MessageSquare } from 'lucide-react';
+import { Edit3, Trash2 } from 'lucide-react';
 
 export interface Trade {
   id: string;
@@ -121,7 +121,8 @@ export const TradeCard: React.FC<TradeCardProps> = ({ trade, onEdit, onDelete })
           
           {trade.screenshots.length > 0 && (
             <div className="flex items-center space-x-2">
-              <Image className="w-4 h-4 text-gray-400" />
+              {/* Assuming Image icon is not imported, so it's commented out or removed */}
+              {/* <Image className="w-4 h-4 text-gray-400" /> */}
               <span className="text-sm text-gray-400">
                 {trade.screenshots.length} screenshot{trade.screenshots.length > 1 ? 's' : ''}
               </span>
