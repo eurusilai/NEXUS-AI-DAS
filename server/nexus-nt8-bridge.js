@@ -86,7 +86,10 @@ class NexusNT8Bridge {
                 const detectedSource = this.detectDataSource(req.body);
                 if (detectedSource) {
                     req.dataSource = detectedSource;
+                    // Only log data source detection in development
+                if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'dev') {
                     console.log(`📡 Detected data source: ${detectedSource}`);
+                }
                 }
             }
             
@@ -256,7 +259,10 @@ class NexusNT8Bridge {
 
             this.storeAndBroadcastData(transformedData, 'SIERRA_CHART');
             
-            console.log(`Sierra Chart Data: ${data.Symbol} @ ${data.Last}, Volume: ${data.Volume}`);
+            // Only log sensitive data in development
+            if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'dev') {
+                console.log(`Sierra Chart Data: ${data.Symbol} @ ${data.Last}, Volume: ${data.Volume}`);
+            }
 
             res.json({ 
                 status: 'success',
@@ -283,7 +289,10 @@ class NexusNT8Bridge {
 
             this.storeAndBroadcastData(transformedData, 'RITHMIC');
             
-            console.log(`Rithmic Data: ${data.instrument_id} @ ${data.last_trade_price}`);
+            // Only log sensitive data in development
+            if (process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'dev') {
+                console.log(`Rithmic Data: ${data.instrument_id} @ ${data.last_trade_price}`);
+            }
 
             res.json({ 
                 status: 'success',
@@ -367,10 +376,37 @@ class NexusNT8Bridge {
 
             ws.on('message', (message) => {
                 try {
-                    const data = JSON.parse(message);
+                    // Validate message is a string and not too large
+                    if (typeof message !== 'string' && !Buffer.isBuffer(message)) {
+                        throw new Error('Invalid message type');
+                    }
+                    
+                    const messageStr = message.toString();
+                    if (messageStr.length > 10000) { // 10KB limit
+                        throw new Error('Message too large');
+                    }
+                    
+                    const data = JSON.parse(messageStr);
+                    
+                    // Validate parsed data structure
+                    if (!data || typeof data !== 'object' || !data.type) {
+                        throw new Error('Invalid message structure - missing type field');
+                    }
+                    
                     this.handleWebSocketMessage(ws, data, clientId);
                 } catch (error) {
-                    console.error('Invalid WebSocket message:', error);
+                    console.error(`Invalid WebSocket message from ${clientId}:`, error.message);
+                    
+                    // Send error response to client
+                    try {
+                        ws.send(JSON.stringify({
+                            type: 'error',
+                            message: 'Invalid message format',
+                            timestamp: new Date().toISOString()
+                        }));
+                    } catch (sendError) {
+                        console.error(`Failed to send error response to ${clientId}:`, sendError.message);
+                    }
                 }
             });
 

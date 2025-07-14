@@ -16,6 +16,8 @@ class PythonBrainService {
         this.pythonProcess = null;
         this.pythonReady = false;
         this.pythonQueue = [];
+        this.maxQueueSize = 1000; // Maximum queue size to prevent memory leaks
+        this.requestTimeout = 60000; // 60 seconds timeout for requests
         
         // Data distribution
         this.dataStreams = new Map();
@@ -30,6 +32,7 @@ class PythonBrainService {
         this.setupRoutes();
         this.setupWebSocket();
         this.initializePythonBrain();
+        this.startQueueCleanup();
     }
 
     setupMiddleware() {
@@ -40,10 +43,19 @@ class PythonBrainService {
         this.app.use(express.json({ limit: '50mb' }));
         this.app.use(express.urlencoded({ extended: true }));
         
-        // Request logging
+        // Request logging (conditional for production)
         this.app.use((req, res, next) => {
             const timestamp = new Date().toISOString();
-            console.log(`${timestamp} - Python Brain: ${req.method} ${req.path}`);
+            const isDevelopment = process.env.NODE_ENV === 'development' || process.env.NODE_ENV === 'dev';
+            
+            if (isDevelopment) {
+                console.log(`${timestamp} - Python Brain: ${req.method} ${req.path}`);
+            } else {
+                // In production, only log errors and important events
+                if (req.method !== 'GET' || req.path.includes('error')) {
+                    console.log(`${timestamp} - Python Brain: ${req.method} ${req.path}`);
+                }
+            }
             next();
         });
     }
@@ -142,10 +154,37 @@ class PythonBrainService {
 
             ws.on('message', (message) => {
                 try {
-                    const data = JSON.parse(message);
+                    // Validate message is a string and not too large
+                    if (typeof message !== 'string' && !Buffer.isBuffer(message)) {
+                        throw new Error('Invalid message type');
+                    }
+                    
+                    const messageStr = message.toString();
+                    if (messageStr.length > 50000) { // 50KB limit for analysis data
+                        throw new Error('Message too large');
+                    }
+                    
+                    const data = JSON.parse(messageStr);
+                    
+                    // Validate parsed data structure
+                    if (!data || typeof data !== 'object' || !data.type) {
+                        throw new Error('Invalid message structure - missing type field');
+                    }
+                    
                     this.handleWebSocketMessage(ws, data, clientId);
                 } catch (error) {
-                    console.error('Invalid WebSocket message:', error);
+                    console.error(`🐍 Invalid WebSocket message from ${clientId}:`, error.message);
+                    
+                    // Send error response to client
+                    try {
+                        ws.send(JSON.stringify({
+                            type: 'error',
+                            message: 'Invalid message format',
+                            timestamp: new Date().toISOString()
+                        }));
+                    } catch (sendError) {
+                        console.error(`🐍 Failed to send error response to ${clientId}:`, sendError.message);
+                    }
                 }
             });
 
@@ -1215,6 +1254,17 @@ if __name__ == "__main__":
             timestamp: new Date().toISOString()
         };
 
+        // Check queue size and clean up if necessary
+        this.cleanupExpiredRequests();
+        
+        if (this.pythonQueue.length >= this.maxQueueSize) {
+            return res.status(503).json({
+                error: 'Python brain queue is full. Please try again later.',
+                status: 'queue_full',
+                queueSize: this.pythonQueue.length
+            });
+        }
+
         // Store the response handler
         this.pythonQueue.push({
             id: requestId,
@@ -1257,6 +1307,63 @@ if __name__ == "__main__":
                 result: response.result,
                 timestamp: response.timestamp
             });
+        }
+    }
+
+    // Queue management methods to prevent memory leaks
+    cleanupExpiredRequests() {
+        const now = Date.now();
+        const initialLength = this.pythonQueue.length;
+        
+        this.pythonQueue = this.pythonQueue.filter(item => {
+            const age = now - item.timestamp;
+            if (age > this.requestTimeout) {
+                // Send timeout response
+                try {
+                    item.res.status(408).json({
+                        error: 'Request timeout',
+                        status: 'timeout',
+                        age: age
+                    });
+                } catch (error) {
+                    // Response may have already been sent or closed
+                    console.error('🐍 Error sending timeout response:', error.message);
+                }
+                return false; // Remove from queue
+            }
+            return true; // Keep in queue
+        });
+        
+        const removedCount = initialLength - this.pythonQueue.length;
+        if (removedCount > 0) {
+            console.log(`🐍 Cleaned up ${removedCount} expired requests from Python queue`);
+        }
+    }
+
+    startQueueCleanup() {
+        // Clean up expired requests every 30 seconds
+        setInterval(() => {
+            this.cleanupExpiredRequests();
+            
+            // Also clean up analysis cache to prevent it from growing indefinitely
+            this.cleanupAnalysisCache();
+        }, 30000);
+    }
+
+    cleanupAnalysisCache() {
+        const maxCacheSize = 1000;
+        const cacheSize = this.analysisCache.size;
+        
+        if (cacheSize > maxCacheSize) {
+            // Remove oldest entries (simple FIFO cleanup)
+            const entries = Array.from(this.analysisCache.entries());
+            const toRemove = cacheSize - maxCacheSize;
+            
+            for (let i = 0; i < toRemove; i++) {
+                this.analysisCache.delete(entries[i][0]);
+            }
+            
+            console.log(`🐍 Cleaned up ${toRemove} old entries from analysis cache`);
         }
     }
 
