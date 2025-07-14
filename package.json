@@ -9,7 +9,7 @@
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "server": "node server/nexus-nt8-bridge.js",
+    "server": "node server/nexus-nt8-bridge.cjs",
     "python-brain": "node server/python-brain.cjs",
     "start:all": "concurrently \"npm run server\" \"npm run python-brain\" \"npm run dev:frontend\""
   },
