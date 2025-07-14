@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "concurrently \"npm run server\" \"npm run python-brain\" \"vite\"",
-    "dev:frontend": "vite",
+    "dev:frontend": "cd project && vite",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview",
