@@ -18,6 +18,15 @@ interface AIAnalysisPanelProps {
   dashboardContext: any;
 }
 
+async function analyzeWithPythonBackend(type: string, data: any) {
+  const response = await fetch('http://localhost:5000/analyze', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ type, data })
+  });
+  return await response.json();
+}
+
 export const AIAnalysisPanel: React.FC<AIAnalysisPanelProps> = ({ dashboardContext }) => {
   const [analyses, setAnalyses] = useState<{
     market?: string;
@@ -128,6 +137,29 @@ export const AIAnalysisPanel: React.FC<AIAnalysisPanelProps> = ({ dashboardConte
             <span>Analyze All</span>
           </button>
         </div>
+      </div>
+
+      {/* Python Backend Demo Button */}
+      <div className="mb-4">
+        <button
+          onClick={async () => {
+            // Example: send mock market data
+            const mockData = {
+              market_data: [
+                { price: 100, volume: 200, open: 99, high: 101, low: 98, close: 100 },
+                { price: 101, volume: 210, open: 100, high: 102, low: 99, close: 101 },
+                { price: 102, volume: 220, open: 101, high: 103, low: 100, close: 102 },
+                { price: 103, volume: 230, open: 102, high: 104, low: 101, close: 103 },
+                { price: 104, volume: 240, open: 103, high: 105, low: 102, close: 104 },
+              ]
+            };
+            const result = await analyzeWithPythonBackend('market_analysis', mockData);
+            alert('Python backend result: ' + JSON.stringify(result, null, 2));
+          }}
+          className="px-4 py-2 bg-green-600 hover:bg-green-700 rounded text-white"
+        >
+          Test Python Backend (Market Analysis)
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
